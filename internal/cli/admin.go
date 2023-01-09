@@ -3,8 +3,7 @@ package cli
 import "github.com/spf13/cobra"
 
 func (cli *CLI) initAdmin() {
-	adminCommand := cli.adminCommand()
-	cli.SetCommand("admin", "root", adminCommand)
+	cli.SetCommand("admin", "root", cli.adminCommand())
 }
 
 func (cli *CLI) adminCommand() *cobra.Command {

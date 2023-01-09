@@ -7,18 +7,10 @@ import (
 )
 
 func (cli *CLI) initAdminTopics() {
-
-	adminTopicsCommand := cli.adminTopicsCommand()
-	cli.SetCommand("adminTopics", "admin", adminTopicsCommand)
-
-	adminTopicsDeleteCommand := cli.adminTopicsDeleteCommand()
-	cli.SetCommand("adminTopicsDelete", "adminTopics", adminTopicsDeleteCommand)
-
-	adminTopicsDescribeCommand := cli.adminTopicsDescribeCommand()
-	cli.SetCommand("adminTopicsDescribe", "adminTopics", adminTopicsDescribeCommand)
-
-	adminTopicsListCommand := cli.adminTopicsListCommand()
-	cli.SetCommand("adminTopicsList", "adminTopics", adminTopicsListCommand)
+	cli.SetCommand("adminTopics", "admin", cli.adminTopicsCommand())
+	cli.SetCommand("adminTopicsDelete", "adminTopics", cli.adminTopicsDeleteCommand())
+	cli.SetCommand("adminTopicsDescribe", "adminTopics", cli.adminTopicsDescribeCommand())
+	cli.SetCommand("adminTopicsList", "adminTopics", cli.adminTopicsListCommand())
 }
 
 // adminTopicsCommand deals with managing topics:

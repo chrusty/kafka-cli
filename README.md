@@ -25,3 +25,15 @@ The following commands are under development:
 
 - `admin config params`: Print various config parameters
 - `admin groups delete <group>`: Delete a group
+
+
+Config
+------
+
+Instead of having to provide your config as parameters every time, just set some env-vars:
+
+- `KAFKA_BOOTSTRAPSERVERS`: The Kafka brokers to connect to ("**localhost:9092**")
+- `KAFKA_PASSWORD`: The SASL password to authenticate with _(optional)_
+- `KAFKA_USERNAME`: The SASL username to authenticate with _(optional)_
+- `KAFKA_SASLMECHANISM`: The mechanism for SASL auth ["SCRAM-SHA-256", "**SCRAM-SHA-512**"]
+- `KAFKA_SECURITYPROTOCOL`: The security protocol ["SASL_SSL", "SASL_PLAINTEXT", "SSL", "**PLAINTEXT**"]

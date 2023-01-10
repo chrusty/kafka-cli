@@ -42,13 +42,14 @@ func (cli *CLI) adminTopicsDeleteCommand() *cobra.Command {
 				Debugf("Deleting topic: %s", topicName)
 
 			// Delete the topic:
-			if _, err := cli.adminClient.DeleteTopics(context.TODO(), &kafka.DeleteTopicsRequest{
+			response, err := cli.adminClient.DeleteTopics(context.TODO(), &kafka.DeleteTopicsRequest{
 				Topics: []string{topicName},
-			}); err != nil {
+			})
+			if err != nil {
 				cli.logger.WithError(err).WithField("topic", topicName).Fatal("Unable to delete topic")
 			}
 
-			cli.logger.WithField("topic", topicName).Info("Topic deleted")
+			cli.logger.WithError(response.Errors[topicName]).WithField("topic", topicName).Info("Topic deleted")
 		},
 	}
 }
@@ -120,21 +121,19 @@ func (cli *CLI) adminTopicsListCommand() *cobra.Command {
 				WithField("username", cli.config.Kafka.Username).
 				Debug("Listing topics")
 
-			// Get an admin client:
-			adminClient, err := cli.config.Kafka.Admin(cli.logger)
-			if err != nil {
-				cli.logger.WithError(err).Fatal("Unable to prepare a Kafka admin client")
-			}
-
 			// Retrieve cluster metadata:
-			kafkaMetadata, err := adminClient.Metadata(context.TODO(), &kafka.MetadataRequest{})
+			kafkaMetadata, err := cli.adminClient.Metadata(context.TODO(), &kafka.MetadataRequest{})
 			if err != nil {
 				cli.logger.WithError(err).Fatal("Unable to retrieve cluster metadata")
 			}
 
 			// List the topics:
 			for _, topic := range kafkaMetadata.Topics {
-				cli.logger.WithField("topic", topic.Name).Info("Topic")
+				cli.logger.
+					WithField("name", topic.Name).
+					WithField("partitions", len(topic.Partitions)).
+					WithField("internal", topic.Internal).
+					Info("Topic")
 			}
 		},
 	}

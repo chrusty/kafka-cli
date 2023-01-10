@@ -18,7 +18,7 @@ So far the following commands are supported:
 - `admin topics list`: List topics
 - `admin topics describe <topic>`: Describe the config for a specific topic
 - `admin topics delete <topic>`: Delete a topic
-- `admin consume <topic>`: Consume messages from a specific topic (optionally with a consumer-group ID)
+- `admin consume <topic>`: Consume messages from a specific topic (optionally with a consumer-group ID). Messages go to STDOUT, logs to STDERR.
 
 
 The following commands are under development:

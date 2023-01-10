@@ -34,6 +34,8 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 
 	switch kc.SecurityProtocol {
 
+	case "PLAINTEXT":
+
 	case "SSL":
 
 		// Configure our dialer to use TLS:
@@ -71,7 +73,7 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 		dialer.TLS = &tls.Config{}
 
 	default:
-		return nil, fmt.Errorf("Unsupported security mechanism %s", kc.SaslMechanism)
+		return nil, fmt.Errorf("Unsupported security protocol %s", kc.SecurityProtocol)
 	}
 
 	// Put a reader together with our config:

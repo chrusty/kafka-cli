@@ -65,7 +65,7 @@ func (kc *KafkaConfig) Admin(logger *logrus.Logger) (*kafka.Client, error) {
 		}
 
 	default:
-		return nil, fmt.Errorf("Unsupported security mechanism %s", kc.SaslMechanism)
+		return nil, fmt.Errorf("Unsupported security protocol %s", kc.SecurityProtocol)
 	}
 
 	return client, nil

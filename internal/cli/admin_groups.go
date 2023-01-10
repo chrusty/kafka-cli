@@ -9,6 +9,7 @@ import (
 
 func (cli *CLI) initAdminGroups() {
 	cli.SetCommand("adminGroups", "admin", cli.adminGroupsCommand())
+	cli.SetCommand("adminGroupsDelete", "adminGroups", cli.adminGroupsDeleteCommand())
 	cli.SetCommand("adminGroupsDescribe", "adminGroups", cli.adminGroupsDescribeCommand())
 	cli.SetCommand("adminGroupsList", "adminGroups", cli.adminGroupsListCommand())
 }
@@ -21,6 +22,42 @@ func (cli *CLI) adminGroupsCommand() *cobra.Command {
 	}
 }
 
+// adminGroupsDeleteCommand deals with deleting groups:
+func (cli *CLI) adminGroupsDeleteCommand() *cobra.Command {
+
+	return &cobra.Command{
+		Use:   "delete <group>",
+		Short: "Delete a group",
+		Args:  cobra.ExactArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+
+			// Get the groupId:
+			groupId := args[0]
+
+			// Config:
+			cli.logger.
+				WithField("sasl", cli.config.Kafka.SaslMechanism).
+				WithField("security", cli.config.Kafka.SecurityProtocol).
+				WithField("servers", cli.config.Kafka.BootstrapServers).
+				WithField("username", cli.config.Kafka.Username).
+				Debugf("Describing group: %s", groupId)
+
+			// Delete the group:
+			response, err := cli.adminClient.OffsetDelete(
+				context.TODO(),
+				&kafka.OffsetDeleteRequest{
+					GroupID: groupId,
+				},
+			)
+			if err != nil {
+				cli.logger.WithError(err).WithField("group", groupId).Fatal("Unable to delete group")
+			}
+
+			cli.logger.WithError(response.Error).WithField("group", groupId).Info("Group deleted")
+		},
+	}
+}
+
 // adminGroupsDescribeCommand deals with describing groups:
 func (cli *CLI) adminGroupsDescribeCommand() *cobra.Command {
 
@@ -30,8 +67,8 @@ func (cli *CLI) adminGroupsDescribeCommand() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 
-			// Get the group name:
-			groupName := args[0]
+			// Get the groupId:
+			groupId := args[0]
 
 			// Config:
 			cli.logger.
@@ -39,13 +76,13 @@ func (cli *CLI) adminGroupsDescribeCommand() *cobra.Command {
 				WithField("security", cli.config.Kafka.SecurityProtocol).
 				WithField("servers", cli.config.Kafka.BootstrapServers).
 				WithField("username", cli.config.Kafka.Username).
-				Debugf("Describing group: %s", groupName)
+				Debugf("Describing group: %s", groupId)
 
 			// Retrieve group config:
 			response, err := cli.adminClient.DescribeGroups(
 				context.TODO(),
 				&kafka.DescribeGroupsRequest{
-					GroupIDs: []string{groupName},
+					GroupIDs: []string{groupId},
 				},
 			)
 			if err != nil {
@@ -79,21 +116,15 @@ func (cli *CLI) adminGroupsListCommand() *cobra.Command {
 				WithField("username", cli.config.Kafka.Username).
 				Debug("Listing groups")
 
-			// Get an admin client:
-			adminClient, err := cli.config.Kafka.Admin(cli.logger)
-			if err != nil {
-				cli.logger.WithError(err).Fatal("Unable to prepare a Kafka admin client")
-			}
-
 			// Retrieve groups:
-			response, err := adminClient.ListGroups(context.TODO(), &kafka.ListGroupsRequest{})
+			response, err := cli.adminClient.ListGroups(context.TODO(), &kafka.ListGroupsRequest{})
 			if err != nil {
 				cli.logger.WithError(err).Fatal("Unable to retrieve cluster metadata")
 			}
 
 			// List the topics:
 			for _, group := range response.Groups {
-				cli.logger.WithField("name", group.GroupID).Info("Group")
+				cli.logger.WithField("id", group.GroupID).Info("Group")
 			}
 		},
 	}

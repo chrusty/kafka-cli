@@ -41,8 +41,10 @@ func New(config *configuration.Config, logger *logrus.Logger) *CLI {
 
 	// Add subcommands:
 	c.initAdmin()
+	c.initAdminConfig()
 	c.initAdminGroups()
 	c.initAdminTopics()
+	c.initConsume()
 
 	return c
 }

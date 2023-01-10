@@ -7,6 +7,7 @@ func (cli *CLI) initAdmin() {
 }
 
 func (cli *CLI) adminCommand() *cobra.Command {
+
 	return &cobra.Command{
 		Use:   "admin",
 		Short: "Administration of topics",

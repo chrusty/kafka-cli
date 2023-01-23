@@ -15,10 +15,11 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 
 	// Prepare a reader config:
 	readerConfig := kafka.ReaderConfig{
-		Brokers:     kc.BootstrapServers,
-		ErrorLogger: &kafkaErrorLogger{logger: logger},
-		Logger:      &kafkaLogger{logger: logger},
-		Topic:       topicName,
+		Brokers:        kc.BootstrapServers,
+		CommitInterval: 5 * time.Second,
+		ErrorLogger:    &kafkaErrorLogger{logger: logger},
+		Logger:         &kafkaLogger{logger: logger},
+		Topic:          topicName,
 	}
 
 	// Add the groupId if one was provided:

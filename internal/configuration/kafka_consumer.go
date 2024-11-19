@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/segmentio/kafka-go"
+	"github.com/segmentio/kafka-go/sasl/aws_msk_iam_v2"
 	"github.com/segmentio/kafka-go/sasl/scram"
 	"github.com/sirupsen/logrus"
 )
@@ -36,6 +38,16 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 	switch kc.SecurityProtocol {
 
 	case "PLAINTEXT":
+
+	case "AWS_MSK_IAM":
+
+		config := aws.Config{Region: "us-west-2"}
+
+		// Define an SASL mechanism from an AWS client config:
+		saslMechanism := aws_msk_iam_v2.NewMechanism(config)
+
+		// Add it to our dialer:
+		dialer.SASLMechanism = saslMechanism
 
 	case "SSL":
 

@@ -15,7 +15,7 @@ type KafkaConfig struct {
 	Password         string   `env:"KAFKA_PASSWORD"`                                 // SASL/SCRAM password
 	RequiredAcks     int      `env:"KAFKA_REQUIREDACKS" envDefault:"1"`              // Required ACKS [1,2]
 	SaslMechanism    string   `env:"KAFKA_SASLMECHANISM" envDefault:"SCRAM-SHA-512"` // [SCRAM-SHA-256, SCRAM-SHA-512]
-	SecurityProtocol string   `env:"KAFKA_SECURITYPROTOCOL" envDefault:"PLAINTEXT"`  // [SASL_SSL, SASL_PLAINTEXT, SSL, PLAINTEXT]
+	SecurityProtocol string   `env:"KAFKA_SECURITYPROTOCOL" envDefault:"PLAINTEXT"`  // [AWS_MSK_IAM, SASL_SSL, SASL_PLAINTEXT, SSL, PLAINTEXT]
 	Username         string   `env:"KAFKA_USERNAME"`                                 // SASL/SCRAM username
 }
 

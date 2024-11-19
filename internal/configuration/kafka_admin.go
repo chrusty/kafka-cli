@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/chrusty/kafka-cli/internal/types"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/sasl/aws_msk_iam_v2"
 	"github.com/segmentio/kafka-go/sasl/scram"
@@ -21,11 +22,11 @@ func (kc *KafkaConfig) Admin(logger *logrus.Logger) (*kafka.Client, error) {
 
 	switch kc.SecurityProtocol {
 
-	case "PLAINTEXT":
+	case types.SecProtocolPlaintext:
 
 		client.Transport = &kafka.Transport{}
 
-	case "AWS_MSK_IAM":
+	case types.SecProtocolAWSMSKIAM:
 
 		config := aws.Config{}
 
@@ -37,13 +38,13 @@ func (kc *KafkaConfig) Admin(logger *logrus.Logger) (*kafka.Client, error) {
 			SASL: saslMechanism,
 		}
 
-	case "SSL":
+	case types.SecProtocolSSL:
 
 		client.Transport = &kafka.Transport{
 			TLS: &tls.Config{},
 		}
 
-	case "SASL_PLAINTEXT":
+	case types.SecProtocolSaslPlaintext:
 
 		// Define an SASL mechanism:
 		saslMechanism, err := scram.Mechanism(
@@ -60,7 +61,7 @@ func (kc *KafkaConfig) Admin(logger *logrus.Logger) (*kafka.Client, error) {
 			SASL: saslMechanism,
 		}
 
-	case "SASL_SSL":
+	case types.SecProtocolSaslSSL:
 
 		// Define an SASL mechanism:
 		saslMechanism, err := scram.Mechanism(

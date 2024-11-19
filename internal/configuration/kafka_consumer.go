@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/chrusty/kafka-cli/internal/types"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/sasl/aws_msk_iam_v2"
@@ -37,9 +39,9 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 
 	switch kc.SecurityProtocol {
 
-	case "PLAINTEXT":
+	case types.SecProtocolPlaintext:
 
-	case "AWS_MSK_IAM":
+	case types.SecProtocolAWSMSKIAM:
 
 		config := aws.Config{}
 
@@ -49,12 +51,12 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 		// Add it to our dialer:
 		dialer.SASLMechanism = saslMechanism
 
-	case "SSL":
+	case types.SecProtocolSSL:
 
 		// Configure our dialer to use TLS:
 		dialer.TLS = &tls.Config{}
 
-	case "SASL_PLAINTEXT":
+	case types.SecProtocolSaslPlaintext:
 
 		// Define an SASL mechanism:
 		saslMechanism, err := scram.Mechanism(
@@ -69,7 +71,7 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 		// Add it to our dialer:
 		dialer.SASLMechanism = saslMechanism
 
-	case "SASL_SSL":
+	case types.SecProtocolSaslSSL:
 
 		// Define an SASL mechanism:
 		saslMechanism, err := scram.Mechanism(

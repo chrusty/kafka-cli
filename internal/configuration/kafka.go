@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"github.com/chrusty/kafka-cli/internal/types"
 	"github.com/segmentio/kafka-go/sasl/scram"
 	"github.com/sirupsen/logrus"
 )
@@ -41,9 +42,9 @@ func (kel *kafkaErrorLogger) Printf(format string, args ...interface{}) {
 
 func (kc *KafkaConfig) saslAlgorithm(logger *logrus.Logger) scram.Algorithm {
 	switch kc.SaslMechanism {
-	case "SCRAM-SHA-256":
+	case types.SaslMechanismScramSHA256:
 		return scram.SHA256
-	case "SCRAM-SHA-512":
+	case types.SaslMechanismScramSHA512:
 		return scram.SHA512
 	default:
 		logger.Warnf("Unsupported SASL mechanism (%s), assuming default (%s)", kc.SaslMechanism, defaultSaslAlgorithm)

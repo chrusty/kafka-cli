@@ -41,7 +41,7 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 
 	case "AWS_MSK_IAM":
 
-		config := aws.Config{Region: "us-west-2"}
+		config := aws.Config{}
 
 		// Define an SASL mechanism from an AWS client config:
 		saslMechanism := aws_msk_iam_v2.NewMechanism(config)
@@ -86,7 +86,7 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 		dialer.TLS = &tls.Config{}
 
 	default:
-		return nil, fmt.Errorf("Unsupported security protocol %s", kc.SecurityProtocol)
+		return nil, fmt.Errorf("unsupported security protocol %s", kc.SecurityProtocol)
 	}
 
 	// Put a reader together with our config:

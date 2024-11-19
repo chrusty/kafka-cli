@@ -4,7 +4,9 @@ import (
 	"crypto/tls"
 	"fmt"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/segmentio/kafka-go"
+	"github.com/segmentio/kafka-go/sasl/aws_msk_iam_v2"
 	"github.com/segmentio/kafka-go/sasl/scram"
 	"github.com/sirupsen/logrus"
 )
@@ -22,6 +24,18 @@ func (kc *KafkaConfig) Admin(logger *logrus.Logger) (*kafka.Client, error) {
 	case "PLAINTEXT":
 
 		client.Transport = &kafka.Transport{}
+
+	case "AWS_MSK_IAM":
+
+		config := aws.Config{}
+
+		// Define an SASL mechanism from an AWS client config:
+		saslMechanism := aws_msk_iam_v2.NewMechanism(config)
+
+		// Transport:
+		client.Transport = &kafka.Transport{
+			SASL: saslMechanism,
+		}
 
 	case "SSL":
 
@@ -65,7 +79,7 @@ func (kc *KafkaConfig) Admin(logger *logrus.Logger) (*kafka.Client, error) {
 		}
 
 	default:
-		return nil, fmt.Errorf("Unsupported security protocol %s", kc.SecurityProtocol)
+		return nil, fmt.Errorf("unsupported security protocol %s", kc.SecurityProtocol)
 	}
 
 	return client, nil

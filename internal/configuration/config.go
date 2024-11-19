@@ -23,7 +23,7 @@ func Load(logger *logrus.Logger) (*Config, error) {
 		&newConfig.Logging,
 	} {
 		if err := env.Parse(configSection); err != nil {
-			return nil, fmt.Errorf("Unable to load the config: %v", err)
+			return nil, fmt.Errorf("unable to load the config: %v", err)
 		}
 	}
 

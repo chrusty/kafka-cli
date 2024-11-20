@@ -41,7 +41,7 @@ func (cli *CLI) consumeCommand() *cobra.Command {
 				WithField("username", cli.config.Kafka.Username).
 				Debugf("Consuming topic: %s", topicName)
 
-			// Get an admin client:
+			// Get a consumer client:
 			consumer, err := cli.config.Kafka.Consumer(cli.logger, groupId, topicName)
 			if err != nil {
 				cli.logger.WithError(err).WithField("topic", topicName).WithField("group", groupId).Fatal("Unable to prepare a consumer")

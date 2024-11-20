@@ -36,6 +36,7 @@ func (kc *KafkaConfig) Admin(logger *logrus.Logger) (*kafka.Client, error) {
 		// Transport:
 		client.Transport = &kafka.Transport{
 			SASL: saslMechanism,
+			TLS:  &tls.Config{},
 		}
 
 	case types.SecProtocolSSL:

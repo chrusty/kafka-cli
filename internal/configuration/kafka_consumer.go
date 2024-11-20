@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 	"time"
@@ -47,6 +48,7 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 
 		// Define an SASL mechanism from an AWS client config:
 		saslMechanism := aws_msk_iam_v2.NewMechanism(config)
+		saslMechanism.Start(context.TODO())
 
 		// Add it to our dialer:
 		dialer.SASLMechanism = saslMechanism

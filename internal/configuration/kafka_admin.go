@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"context"
 	"crypto/tls"
 	"fmt"
 
@@ -32,6 +33,7 @@ func (kc *KafkaConfig) Admin(logger *logrus.Logger) (*kafka.Client, error) {
 
 		// Define an SASL mechanism from an AWS client config:
 		saslMechanism := aws_msk_iam_v2.NewMechanism(config)
+		saslMechanism.Start(context.TODO())
 
 		// Transport:
 		client.Transport = &kafka.Transport{

@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials/ec2rolecreds"
 	"github.com/chrusty/kafka-cli/internal/types"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/sasl/aws_msk_iam_v2"
@@ -30,6 +31,7 @@ func (kc *KafkaConfig) Admin(logger *logrus.Logger) (*kafka.Client, error) {
 	case types.SecProtocolAWSMSKIAM:
 
 		awsConfig, err := config.LoadDefaultConfig(context.TODO())
+		awsConfig.Credentials = ec2rolecreds.New()
 		if err != nil {
 			return nil, err
 		}

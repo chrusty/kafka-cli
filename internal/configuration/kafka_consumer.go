@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials/ec2rolecreds"
 	"github.com/chrusty/kafka-cli/internal/types"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/segmentio/kafka-go"
@@ -45,6 +46,7 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 	case types.SecProtocolAWSMSKIAM:
 
 		awsConfig, err := config.LoadDefaultConfig(context.TODO())
+		awsConfig.Credentials = ec2rolecreds.New()
 		if err != nil {
 			return nil, err
 		}

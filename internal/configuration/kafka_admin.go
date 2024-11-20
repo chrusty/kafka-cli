@@ -33,6 +33,7 @@ func (kc *KafkaConfig) Admin(logger *logrus.Logger) (*kafka.Client, error) {
 		if err != nil {
 			return nil, err
 		}
+		fmt.Printf("Config: %v\n", awsConfig)
 
 		// Define an SASL mechanism from an AWS client config:
 		saslMechanism := aws_msk_iam_v2.NewMechanism(awsConfig)

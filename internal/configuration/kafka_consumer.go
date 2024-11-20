@@ -48,6 +48,8 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 			return nil, err
 		}
 
+		fmt.Printf("Config: %v\n", awsConfig)
+
 		// Define an SASL mechanism from an AWS client config:
 		saslMechanism := aws_msk_iam_v2.NewMechanism(awsConfig)
 		saslMechanism.Start(context.TODO())

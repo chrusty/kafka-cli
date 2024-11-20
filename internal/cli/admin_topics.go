@@ -8,6 +8,7 @@ import (
 
 func (cli *CLI) initAdminTopics() {
 	cli.SetCommand("adminTopics", "admin", cli.adminTopicsCommand())
+	cli.SetCommand("adminTopicCreate", "adminTopics", cli.adminTopicCreateCommand())
 	cli.SetCommand("adminTopicsDelete", "adminTopics", cli.adminTopicsDeleteCommand())
 	cli.SetCommand("adminTopicsDescribe", "adminTopics", cli.adminTopicsDescribeCommand())
 	cli.SetCommand("adminTopicsList", "adminTopics", cli.adminTopicsListCommand())
@@ -18,6 +19,45 @@ func (cli *CLI) adminTopicsCommand() *cobra.Command {
 	return &cobra.Command{
 		Use:   "topics",
 		Short: "Work with topics",
+	}
+}
+
+// adminTopicCreateCommand deals with creating topics:
+func (cli *CLI) adminTopicCreateCommand() *cobra.Command {
+	return &cobra.Command{
+		Use:        "create <topic>",
+		Short:      "Create a topic",
+		Args:       cobra.ExactArgs(1),
+		ArgAliases: []string{"topic"},
+		Run: func(cmd *cobra.Command, args []string) {
+
+			// Get the topic name:
+			topicName := args[0]
+
+			// Config:
+			cli.logger.
+				WithField("sasl", cli.config.Kafka.SaslMechanism).
+				WithField("security", cli.config.Kafka.SecurityProtocol).
+				WithField("servers", cli.config.Kafka.BootstrapServers).
+				WithField("username", cli.config.Kafka.Username).
+				Debugf("Creating topic: %s", topicName)
+
+			// Delete the topic:
+			response, err := cli.adminClient.CreateTopics(context.TODO(), &kafka.CreateTopicsRequest{
+				Topics: []kafka.TopicConfig{
+					{
+						Topic:             topicName,
+						NumPartitions:     -1,
+						ReplicationFactor: -1,
+					},
+				},
+			})
+			if err != nil {
+				cli.logger.WithError(err).WithField("topic", topicName).Fatal("Unable to create topic")
+			}
+
+			cli.logger.WithError(response.Errors[topicName]).WithField("topic", topicName).Info("Topic created")
+		},
 	}
 }
 

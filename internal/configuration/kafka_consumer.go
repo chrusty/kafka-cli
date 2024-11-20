@@ -6,9 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/chrusty/kafka-cli/internal/types"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/sasl/aws_msk_iam_v2"
 	"github.com/segmentio/kafka-go/sasl/scram"
@@ -44,10 +43,13 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 
 	case types.SecProtocolAWSMSKIAM:
 
-		config := aws.Config{}
+		awsConfig, err := config.LoadDefaultConfig(context.TODO())
+		if err != nil {
+			return nil, err
+		}
 
 		// Define an SASL mechanism from an AWS client config:
-		saslMechanism := aws_msk_iam_v2.NewMechanism(config)
+		saslMechanism := aws_msk_iam_v2.NewMechanism(awsConfig)
 		saslMechanism.Start(context.TODO())
 
 		// Add it to our dialer:

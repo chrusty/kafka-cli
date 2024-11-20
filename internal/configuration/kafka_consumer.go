@@ -8,6 +8,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/chrusty/kafka-cli/internal/types"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/sasl/aws_msk_iam_v2"
 	"github.com/segmentio/kafka-go/sasl/scram"
@@ -48,7 +49,12 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 			return nil, err
 		}
 
-		fmt.Printf("Config: %v\n", awsConfig)
+		creds, err := awsConfig.Credentials.Retrieve(context.TODO())
+		if err != nil {
+			return nil, err
+		}
+
+		spew.Dump(creds)
 
 		// Define an SASL mechanism from an AWS client config:
 		saslMechanism := aws_msk_iam_v2.NewMechanism(awsConfig)

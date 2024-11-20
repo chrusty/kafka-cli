@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/chrusty/kafka-cli/internal/types"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/sasl/scram"
 	"github.com/sirupsen/logrus"
@@ -35,14 +36,26 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 
 	switch kc.SecurityProtocol {
 
-	case "PLAINTEXT":
+	case types.SecProtocolPlaintext:
 
-	case "SSL":
+	case types.SecProtocolAWSMSKIAM:
+
+		// Get an AWS-loaded SASL mechanism:
+		saslMechanism, err := AWSSaslMechanismV1()
+		if err != nil {
+			return nil, err
+		}
+
+		// Add it to our dialer:
+		dialer.SASLMechanism = saslMechanism
+		dialer.TLS = &tls.Config{}
+
+	case types.SecProtocolSSL:
 
 		// Configure our dialer to use TLS:
 		dialer.TLS = &tls.Config{}
 
-	case "SASL_PLAINTEXT":
+	case types.SecProtocolSaslPlaintext:
 
 		// Define an SASL mechanism:
 		saslMechanism, err := scram.Mechanism(
@@ -57,7 +70,7 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 		// Add it to our dialer:
 		dialer.SASLMechanism = saslMechanism
 
-	case "SASL_SSL":
+	case types.SecProtocolSaslSSL:
 
 		// Define an SASL mechanism:
 		saslMechanism, err := scram.Mechanism(
@@ -74,7 +87,7 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 		dialer.TLS = &tls.Config{}
 
 	default:
-		return nil, fmt.Errorf("Unsupported security protocol %s", kc.SecurityProtocol)
+		return nil, fmt.Errorf("unsupported security protocol %s", kc.SecurityProtocol)
 	}
 
 	// Put a reader together with our config:

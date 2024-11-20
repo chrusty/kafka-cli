@@ -94,7 +94,7 @@ Set these env-vars to configure the CLI:
 - KAFKA_PASSWORD: The SASL password to authenticate with (optional)
 - KAFKA_USERNAME: The SASL username to authenticate with (optional)
 - KAFKA_SASLMECHANISM: The mechanism for SASL auth ["SCRAM-SHA-256", "SCRAM-SHA-512" (default)]
-- KAFKA_SECURITYPROTOCOL: The security protocol ["SASL_SSL", "SASL_PLAINTEXT", "SSL", "PLAINTEXT" (default)]
+- KAFKA_SECURITYPROTOCOL: The security protocol ["AWS_MSK_IAM, SASL_SSL", "SASL_PLAINTEXT", "SSL", "PLAINTEXT" (default)]
 `,
 		CompletionOptions: cobra.CompletionOptions{
 			DisableDefaultCmd: true,

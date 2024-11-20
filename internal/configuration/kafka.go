@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"github.com/chrusty/kafka-cli/internal/types"
 	"github.com/segmentio/kafka-go/sasl/scram"
 	"github.com/sirupsen/logrus"
 )
@@ -15,7 +16,7 @@ type KafkaConfig struct {
 	Password         string   `env:"KAFKA_PASSWORD"`                                 // SASL/SCRAM password
 	RequiredAcks     int      `env:"KAFKA_REQUIREDACKS" envDefault:"1"`              // Required ACKS [1,2]
 	SaslMechanism    string   `env:"KAFKA_SASLMECHANISM" envDefault:"SCRAM-SHA-512"` // [SCRAM-SHA-256, SCRAM-SHA-512]
-	SecurityProtocol string   `env:"KAFKA_SECURITYPROTOCOL" envDefault:"PLAINTEXT"`  // [SASL_SSL, SASL_PLAINTEXT, SSL, PLAINTEXT]
+	SecurityProtocol string   `env:"KAFKA_SECURITYPROTOCOL" envDefault:"PLAINTEXT"`  // [AWS_MSK_IAM, SASL_SSL, SASL_PLAINTEXT, SSL, PLAINTEXT]
 	Username         string   `env:"KAFKA_USERNAME"`                                 // SASL/SCRAM username
 }
 
@@ -41,9 +42,9 @@ func (kel *kafkaErrorLogger) Printf(format string, args ...interface{}) {
 
 func (kc *KafkaConfig) saslAlgorithm(logger *logrus.Logger) scram.Algorithm {
 	switch kc.SaslMechanism {
-	case "SCRAM-SHA-256":
+	case types.SaslMechanismScramSHA256:
 		return scram.SHA256
-	case "SCRAM-SHA-512":
+	case types.SaslMechanismScramSHA512:
 		return scram.SHA512
 	default:
 		logger.Warnf("Unsupported SASL mechanism (%s), assuming default (%s)", kc.SaslMechanism, defaultSaslAlgorithm)

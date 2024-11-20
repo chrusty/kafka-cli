@@ -50,6 +50,7 @@ func (kc *KafkaConfig) Consumer(logger *logrus.Logger, groupId, topicName string
 
 		// Add it to our dialer:
 		dialer.SASLMechanism = saslMechanism
+		dialer.TLS = &tls.Config{}
 
 	case types.SecProtocolSSL:
 

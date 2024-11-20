@@ -45,6 +45,7 @@ func New(config *configuration.Config, logger *logrus.Logger) *CLI {
 	c.initAdminGroups()
 	c.initAdminTopics()
 	c.initConsume()
+	c.initProduce()
 
 	return c
 }

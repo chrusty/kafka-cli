@@ -24,7 +24,7 @@ func (cli *CLI) adminTopicsCommand() *cobra.Command {
 
 // adminTopicCreateCommand deals with creating topics:
 func (cli *CLI) adminTopicCreateCommand() *cobra.Command {
-	return &cobra.Command{
+	cmd := &cobra.Command{
 		Use:        "create <topic>",
 		Short:      "Create a topic",
 		Args:       cobra.ExactArgs(1),
@@ -34,12 +34,25 @@ func (cli *CLI) adminTopicCreateCommand() *cobra.Command {
 			// Get the topic name:
 			topicName := args[0]
 
+			// Get the partitions flag:
+			numPartitions, err := cmd.Flags().GetInt("partitions")
+			if err != nil {
+				cli.logger.WithError(err).WithField("flag", "partitions:").Fatal("Unable to get flag")
+			}
+
+			// Get the replicas flag:
+			numReplicas, err := cmd.Flags().GetInt("replicas")
+			if err != nil {
+				cli.logger.WithError(err).WithField("flag", "replicas:").Fatal("Unable to get flag")
+			}
+
 			// Config:
 			cli.logger.
 				WithField("sasl", cli.config.Kafka.SaslMechanism).
 				WithField("security", cli.config.Kafka.SecurityProtocol).
 				WithField("servers", cli.config.Kafka.BootstrapServers).
-				WithField("username", cli.config.Kafka.Username).
+				WithField("partitions", numPartitions).
+				WithField("replicas", numReplicas).
 				Debugf("Creating topic: %s", topicName)
 
 			// Delete the topic:
@@ -47,8 +60,8 @@ func (cli *CLI) adminTopicCreateCommand() *cobra.Command {
 				Topics: []kafka.TopicConfig{
 					{
 						Topic:             topicName,
-						NumPartitions:     -1,
-						ReplicationFactor: -1,
+						NumPartitions:     numPartitions,
+						ReplicationFactor: numReplicas,
 					},
 				},
 			})
@@ -59,6 +72,11 @@ func (cli *CLI) adminTopicCreateCommand() *cobra.Command {
 			cli.logger.WithError(response.Errors[topicName]).WithField("topic", topicName).Info("Topic created")
 		},
 	}
+
+	cmd.Flags().IntP("partitions", "p", 1, "Number of partitions for the new topic")
+	cmd.Flags().IntP("replicas", "r", 1, "Number of replicas for the new topic")
+
+	return cmd
 }
 
 // adminTopicDeleteCommand deals with deleting topics:
